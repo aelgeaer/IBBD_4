@@ -10,7 +10,7 @@
             <h3>Доступные таблицы</h3>
             <ul>
                 {% for table in tables %}
-                    <li><a href="{{ url_for('main.view_table', table_name=table) }}">{{ table }}</a></li>
+                    <li><a href="{{ url_for('view_table', table_name=table) }}">{{ table }}</a></li>
                 {% endfor %}
             </ul>
         </div>
@@ -18,7 +18,7 @@
         <div class="card">
             <h3>Специальные возможности</h3>
             <ul>
-                <li><a href="{{ url_for('main.complex_query') }}">Сложный запрос (GROUP BY)</a></li>
+                <li><a href="{{ url_for('complex_query') }}">Сложный запрос (GROUP BY)</a></li>
             </ul>
         </div>
     </div>
