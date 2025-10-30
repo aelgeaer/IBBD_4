@@ -16,3 +16,5 @@ venv\Scripts\activate
 pip install -r requirements.txt
 
 python main.py
+
+Go to: http://localhost:5000
