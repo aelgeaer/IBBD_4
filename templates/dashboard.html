@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard">
+    <h1>Добро пожаловать, {{ username }}!</h1>
+    <p>Ваша роль: <strong>{{ role }}</strong></p>
+    
+    <div class="dashboard-cards">
+        <div class="card">
+            <h3>Доступные таблицы</h3>
+            <ul>
+                {% for table in tables %}
+                    <li><a href="{{ url_for('main.view_table', table_name=table) }}">{{ table }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        <div class="card">
+            <h3>Специальные возможности</h3>
+            <ul>
+                <li><a href="{{ url_for('main.complex_query') }}">Сложный запрос (GROUP BY)</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
