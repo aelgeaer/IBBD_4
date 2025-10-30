@@ -1,28 +1,44 @@
 from flask import Flask, render_template, request, jsonify
-from flask_login import login_required, current_user
+from flask_login import LoginManager, login_required, current_user
 from models import db, User, Teachers, Subject, Groups, Speciality, CompactSchedule, Consultations
 from auth import auth
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key-here'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://petya_admin:admin@localhost/dbs24'
+app.config['SECRET_KEY'] = 'your-secret-key-here-change-this-in-production'
+# Update with your actual password - try 'postgres' first
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://musliqul:postgres@server2_data:5432/dbs24'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Initialize extensions
 db.init_app(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'auth.login'
+
 app.register_blueprint(auth)
 
-# Настройки доступа для разных ролей
+@login_manager.user_loader
+def load_user(user_id):
+    # Create user with proper parameters
+    if user_id == 'admin':
+        return User(user_id=user_id, username=user_id, role='admin')
+    elif user_id == 'teacher':
+        return User(user_id=user_id, username=user_id, role='teacher')
+    elif user_id == 'student':
+        return User(user_id=user_id, username=user_id, role='student')
+    return None
+
 ROLE_PERMISSIONS = {
     'admin': ['teachers', 'subject', 'groups', 'specialty', 'compact_shedule', 'consultations'],
     'teacher': ['teachers', 'subject', 'compact_shedule', 'consultations'],
     'student': ['compact_shedule', 'consultations']
 }
 
-# Подключение к БД для выполнения запросов
 def get_db_session():
-    engine = create_engine('postgresql://petya_admin:admin@localhost/dbs24')
+    # Update with your actual password - try 'postgres' first
+    engine = create_engine('postgresql://postgres:musliqul@server2_data:5432/dbs24')
     Session = sessionmaker(bind=engine)
     return Session()
 
@@ -56,7 +72,6 @@ def view_table(table_name):
         else:
             return "Таблица не найдена", 404
         
-        # Получение названий колонок
         if data:
             columns = [column.name for column in data[0].__table__.columns]
         else:
@@ -79,9 +94,7 @@ def complex_query():
     session = get_db_session()
     
     try:
-        # Сложный запрос с GROUP BY для разных ролей
         if current_user.role == 'admin':
-            # Для администратора: количество предметов по типам
             query = session.query(
                 Subject.subject_type,
                 func.count(Subject.subject_id).label('count')
@@ -91,7 +104,6 @@ def complex_query():
             columns = ['subject_type', 'count']
             
         elif current_user.role == 'teacher':
-            # Для преподавателя: количество консультаций по преподавателям
             query = session.query(
                 Consultations.teacher_full_name,
                 func.count(Consultations.id_consult).label('consultation_count')
@@ -101,7 +113,6 @@ def complex_query():
             columns = ['teacher_full_name', 'consultation_count']
             
         elif current_user.role == 'student':
-            # Для студента: расписание по зданиям
             query = session.query(
                 CompactSchedule.building,
                 func.count(CompactSchedule.id_schel).label('class_count')
@@ -109,6 +120,9 @@ def complex_query():
             
             result = [{'building': row[0], 'class_count': row[1]} for row in query]
             columns = ['building', 'class_count']
+        else:
+            result = []
+            columns = []
         
         session.close()
         return render_template('table_view.html',
@@ -123,4 +137,4 @@ def complex_query():
         return f"Ошибка выполнения запроса: {str(e)}", 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
