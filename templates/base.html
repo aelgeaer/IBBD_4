@@ -14,7 +14,7 @@
             </div>
             <div class="nav-menu">
                 {% if current_user.is_authenticated %}
-                    <span>Пользователь: {{ username }} ({{ role }})</span>
+                    <span>Пользователь: {{ current_user.username }} ({{ current_user.role }})</span>
                     <a href="{{ url_for('auth.logout') }}">Выйти</a>
                 {% endif %}
             </div>
