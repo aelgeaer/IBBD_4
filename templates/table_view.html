@@ -26,8 +26,57 @@
                                 <td>{{ row[column] }}</td>
                             {% endfor %}
                         {% else %}
+                            {# For ORM objects, we need to access attributes differently #}
                             {% for column in columns %}
-                                <td>{{ getattr(row, column) }}</td>
+                                <td>
+                                    {% if column == 'teacher_id' %}
+                                        {{ row.teacher_id }}
+                                    {% elif column == 'teacher_full_name' %}
+                                        {{ row.teacher_full_name }}
+                                    {% elif column == 'department' %}
+                                        {{ row.department }}
+                                    {% elif column == 'email' %}
+                                        {{ row.email }}
+                                    {% elif column == 'phone' %}
+                                        {{ row.phone }}
+                                    {% elif column == 'consultation_time' %}
+                                        {{ row.consultation_time }}
+                                    {% elif column == 'working_bulding' %}
+                                        {{ row.working_bulding }}
+                                    {% elif column == 'subject_id' %}
+                                        {{ row.subject_id }}
+                                    {% elif column == 'subject_name' %}
+                                        {{ row.subject_name }}
+                                    {% elif column == 'subject_type' %}
+                                        {{ row.subject_type }}
+                                    {% elif column == 'group_id' %}
+                                        {{ row.group_id }}
+                                    {% elif column == 'group_id' %}
+                                        {{ row.group_id }}
+                                    {% elif column == 'course_number' %}
+                                        {{ row.course_number }}
+                                    {% elif column == 'admin_full_name' %}
+                                        {{ row.admin_full_name }}
+                                    {% elif column == 'admin_contacts' %}
+                                        {{ row.admin_contacts }}
+                                    {% elif column == 'specialty_code' %}
+                                        {{ row.specialty_code }}
+                                    {% elif column == 'specialty_name' %}
+                                        {{ row.specialty_name }}
+                                    {% elif column == 'id_schel' %}
+                                        {{ row.id_schel }}
+                                    {% elif column == 'classes_start_time' %}
+                                        {{ row.classes_start_time }}
+                                    {% elif column == 'classes_end_time' %}
+                                        {{ row.classes_end_time }}
+                                    {% elif column == 'building' %}
+                                        {{ row.building }}
+                                    {% elif column == 'id_consult' %}
+                                        {{ row.id_consult }}
+                                    {% else %}
+                                        {{ row[column] if row is mapping else '' }}
+                                    {% endif %}
+                                </td>
                             {% endfor %}
                         {% endif %}
                     </tr>
@@ -36,7 +85,7 @@
         </table>
     </div>
     
-    <a href="{{ url_for('main.dashboard') }}" class="btn btn-back">Назад к панели управления</a>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-back">Назад к панели управления</a>
 </div>
 
 <script>
